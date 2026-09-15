@@ -131,4 +131,3 @@ const styles = StyleSheet.create({
   buttonAction: { backgroundColor: '#00ffcc', padding: 16, borderRadius: 12, alignItems: 'center', marginBottom: 35 },
   buttonText: { color: '#000000', fontSize: 15, fontWeight: 'bold', letterSpacing: 1.5 }
 });
-    
