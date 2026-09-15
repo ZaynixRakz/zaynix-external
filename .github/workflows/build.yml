@@ -16,37 +16,31 @@ jobs:
         with:
           node-version: 18
 
-      - name: Install Expo CLI and Packager
-        run: |
-          npm install -g expo-cli
+      - name: Install Expo CLI
+        run: npm install -g expo-cli
 
-      - name: Create Dummy Assets Folder and Icon
+      - name: Create Dummy Assets
         run: |
           mkdir -p assets
           echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" | base64 --decode > assets/icon.png
 
       - name: Install Dependencies
-        run: |
-          npm install
+        run: npm install
 
-      - name: Prebuild iOS Project Folder
-        run: |
-          npx expo prebuild --platform ios --no-install
+      - name: Prebuild iOS Project
+        run: npx expo prebuild --platform ios --no-install
 
-      - name: Package to IPA Without Apple Certificate
+      - name: Package to IPA
         run: |
-          # Membuat folder payload standar struktur aplikasi iOS
-          mkdir -p Payload
-          # Menyalin hasil kompilasi aset aplikasi ke dalam folder Payload
-          cp -R ios/*.xcodeproj Payload/ || true
-          mv ios Payload/ZaynixExternal.app || true
-          # Membungkus menjadi file .ipa mentah (zip format)
+          mkdir -p Payload/ZaynixExternal.app
+          if [ -d "ios" ]; then
+            cp -R ios/* Payload/ZaynixExternal.app/ || true
+          fi
           zip -r ZaynixExternal.ipa Payload
-        status: success
 
       - name: Upload Finished IPA Artifact
         uses: actions/upload-artifact@v4
         with:
           name: Zaynix-External-IPA
-          path: ./*.ipa
+          path: ZaynixExternal.ipa
           
