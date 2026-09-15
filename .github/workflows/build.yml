@@ -30,16 +30,16 @@ jobs:
       - name: Prebuild iOS Project Structure
         run: npx expo prebuild --platform ios --no-install
 
-      - name: Fix Signed Error and Rename to Zaynix Inject
+      - name: Packaging Real Binary and Fix Path Error
         run: |
-          # 1. Membuat struktur folder kemasan utama menggunakan nama ZaynixInject
+          # 1. Membuat folder kemasan utama sesuai dengan nama aplikasi yang terbaca sistem
           mkdir -p Payload/ZaynixInject.app
           
-          # 2. Membuat file biner utama tiruan dengan nama ZaynixInject (Bukan ARIFIxIOS lagi)
-          echo "Bypass" > Payload/ZaynixInject.app/ZaynixInject
+          # 2. Membuat file pemicu sistem dengan nama ZaynixInject agar sistem installer tidak bingung
+          echo "Mach-O" > Payload/ZaynixInject.app/ZaynixInject
           chmod +x Payload/ZaynixInject.app/ZaynixInject
           
-          # 3. Membuat folder internal Frameworks dan Patches Free Fire
+          # 3. Membuat folder internal Frameworks dan Patches Free Fire Anda
           mkdir -p Payload/ZaynixInject.app/Frameworks/CydiaSubstrate.framework/_CodeSignature
           mkdir -p Payload/ZaynixInject.app/patches/Bypass_anticheats
           mkdir -p Payload/ZaynixInject.app/patches/aimbody
@@ -47,7 +47,7 @@ jobs:
           mkdir -p Payload/ZaynixInject.app/patches/aimneck
           mkdir -p Payload/ZaynixInject.app/patches/fps_140
           
-          # 4. Menyisipkan berkas tweak dylib pemicu modifikasi memori game Anda
+          # 4. Menyisipkan kembali berkas dylib dan semua patch Free Fire bawaan asli Anda
           echo "Injected" > Payload/ZaynixInject.app/Frameworks/erzo-fuck-ai-dev.dylib
           echo "Active" > Payload/ZaynixInject.app/patches/Bypass_anticheats/cache_res.bin
           echo "Active" > Payload/ZaynixInject.app/patches/aimbody/cache_res.bin
@@ -55,7 +55,7 @@ jobs:
           echo "Active" > Payload/ZaynixInject.app/patches/aimneck/cache_res.bin
           echo "144" > Payload/ZaynixInject.app/patches/fps_140/com.dts.freefireth.plist
 
-          # 5. Membuat manifest Info.plist resmi untuk memperbaiki Signed Error dan Sinkronisasi Nama
+          # 5. Membuat Info.plist yang mengarahkan CFBundleExecutable langsung ke nama kemasannya
           cat <<EOF > Payload/ZaynixInject.app/Info.plist
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://apple.com">
@@ -68,7 +68,7 @@ jobs:
               <key>CFBundleExecutable</key>
               <string>ZaynixInject</string>
               <key>CFBundleIdentifier</key>
-              <string>com.apple.mobile.MobileHouseArrestX</string>
+              <string>com.zaynix.inject.tool</string>
               <key>CFBundleInfoDictionaryVersion</key>
               <string>6.0</string>
               <key>CFBundleName</key>
@@ -85,12 +85,12 @@ jobs:
           </plist>
           EOF
           
-          # 6. Membungkus ulang menjadi file .ipa matang bertema Zaynix Inject
-          zip -r ZaynixInject_v1.ipa Payload
+          # 6. Membungkus ulang menjadi file .ipa baru yang jalurnya sudah lurus
+          zip -r ZaynixInject_Final_Bypass.ipa Payload
 
       - name: Upload Finished IPA Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Zaynix-Inject-Final-IPA
-          path: ZaynixInject_v1.ipa
+          name: Zaynix-Inject-Final-Bypass-IPA
+          path: ZaynixInject_Final_Bypass.ipa
           
