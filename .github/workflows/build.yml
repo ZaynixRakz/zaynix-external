@@ -1,0 +1,39 @@
+name: Build Zaynix External IPA
+
+on:
+  workflow_dispatch: # Membuat tombol manual "Run Workflow" muncul di GitHub
+
+jobs:
+  build:
+    runs-on: macos-latest # Meminjam komputer Mac gratis milik GitHub
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Expo CLI and EAS CLI
+        run: |
+          npm install -g expo-cli eas-cli
+
+      - name: Install Dependencies
+        run: |
+          npm install
+
+      - name: Build iOS Application (IPA)
+        run: |
+          npx expo prebuild --platform ios
+          cd ios
+          xcodebuild -workspace *.xcworkspace -scheme "ZaynixExternal" -configuration Release -sdk iphoneos package -o ../ZaynixExternal.ipa
+        continue-on-error: true
+
+      - name: Upload Finished IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Zaynix-External-IPA
+          path: ./*.ipa
+          
