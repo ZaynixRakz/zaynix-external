@@ -1,11 +1,11 @@
 name: Build Zaynix External IPA
 
 on:
-  workflow_dispatch: # Membuat tombol manual "Run Workflow" muncul di GitHub
+  workflow_dispatch:
 
 jobs:
   build:
-    runs-on: macos-latest # Meminjam komputer Mac gratis milik GitHub
+    runs-on: macos-latest
 
     steps:
       - name: Checkout Code
@@ -19,6 +19,12 @@ jobs:
       - name: Install Expo CLI and EAS CLI
         run: |
           npm install -g expo-cli eas-cli
+
+      - name: Create Dummy Assets Folder and Icon
+        run: |
+          mkdir -p assets
+          # Membuat file gambar kosong berukuran kecil agar sistem tidak error mencari file icon.png
+          echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" | base64 --decode > assets/icon.png
 
       - name: Install Dependencies
         run: |
