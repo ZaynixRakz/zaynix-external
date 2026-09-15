@@ -1,9 +1,6 @@
 name: Build Zaynix External IPA
 
 on:
-name: Build Zaynix External IPA
-
-on:
   workflow_dispatch:
 
 jobs:
@@ -33,27 +30,19 @@ jobs:
       - name: Prebuild iOS Project Structure
         run: npx expo prebuild --platform ios --no-install
 
-      - name: Compile Real iOS ARM64 Binary to Fix Force Close
+      - name: Compile Real iOS ARM64 Binary
         run: |
-          # 1. Membuat folder kemasan utama iOS (.app)
           mkdir -p Payload/ZaynixInject.app
-          
-          # 2. MEMBUAT DAN MENGOMPILASI BINER REALS iOS ARM64 MURNI
-          # Ini akan membuat kode program C sederhana, lalu dikompilasi menggunakan SDK iPhone resmi Apple 
-          # Langkah ini wajib agar biner dikenali sebagai aplikasi iOS asli dan 100% terbebas dari Force Close!
-          cat <<EOF > main.c
+          cat << 'EOF' > main.c
           #include <stdio.h>
           int main() {
               printf("Zaynix Inject Active\n");
               return 0;
           }
           EOF
-          
-          # Mengompilasi kode menggunakan Clang Xcode dengan target arsitektur iPhone (arm64-apple-ios)
           xcrun -sdk iphoneos clang -arch arm64 -miphoneos-version-min=12.0 main.c -o Payload/ZaynixInject.app/ZaynixInject
           chmod +x Payload/ZaynixInject.app/ZaynixInject
           
-          # 3. Membuat folder internal Frameworks dan Patches Free Fire Anda
           mkdir -p Payload/ZaynixInject.app/Frameworks/CydiaSubstrate.framework/_CodeSignature
           mkdir -p Payload/ZaynixInject.app/patches/Bypass_anticheats
           mkdir -p Payload/ZaynixInject.app/patches/aimbody
@@ -61,7 +50,6 @@ jobs:
           mkdir -p Payload/ZaynixInject.app/patches/aimneck
           mkdir -p Payload/ZaynixInject.app/patches/fps_140
           
-          # 4. Menyisipkan kembali berkas dylib tweak dan seluruh isi patch Free Fire bawaan Anda
           echo "Injected" > Payload/ZaynixInject.app/Frameworks/erzo-fuck-ai-dev.dylib
           echo "Active" > Payload/ZaynixInject.app/patches/Bypass_anticheats/cache_res.bin
           echo "Active" > Payload/ZaynixInject.app/patches/aimbody/cache_res.bin
@@ -69,8 +57,7 @@ jobs:
           echo "Active" > Payload/ZaynixInject.app/patches/aimneck/cache_res.bin
           echo "144" > Payload/ZaynixInject.app/patches/fps_140/com.dts.freefireth.plist
 
-          # 5. Membuat manifes Info.plist resmi untuk sinkronisasi sistem Apple
-          cat <<EOF > Payload/ZaynixInject.app/Info.plist
+          cat << 'EOF' > Payload/ZaynixInject.app/Info.plist
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://apple.com">
           <plist version="1.0">
@@ -99,7 +86,6 @@ jobs:
           </plist>
           EOF
           
-          # 6. Membungkus paket menjadi file .ipa final yang siap pakai
           zip -r ZaynixInject_NoCrash.ipa Payload
 
       - name: Upload Finished IPA Artifact
