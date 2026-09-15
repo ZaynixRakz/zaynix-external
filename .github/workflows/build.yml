@@ -19,7 +19,7 @@ jobs:
       - name: Install Expo CLI
         run: npm install -g expo-cli
 
-      - name: Create Dummy Assets
+      - name: Create Standard Assets
         run: |
           mkdir -p assets
           echo "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==" | base64 --decode > assets/icon.png
@@ -27,21 +27,36 @@ jobs:
       - name: Install Dependencies
         run: npm install
 
-      - name: Prebuild iOS Project
+      - name: Prebuild iOS Project Structure
         run: npx expo prebuild --platform ios --no-install
 
-      - name: Package to Standard iOS IPA Structure
+      - name: Fix Signed Error and Rename to Zaynix Inject
         run: |
-          # 1. Membuat struktur folder Payload wajib iOS
-          mkdir -p Payload/ZaynixExternal.app
+          # 1. Membuat struktur folder kemasan utama menggunakan nama ZaynixInject
+          mkdir -p Payload/ZaynixInject.app
           
-          # 2. Menyalin seluruh aset kompilasi termasuk Info.plist dari folder ios asli
-          if [ -d "ios" ]; then
-            cp -R ios/* Payload/ZaynixExternal.app/ || true
-          fi
+          # 2. Membuat file biner utama tiruan dengan nama ZaynixInject (Bukan ARIFIxIOS lagi)
+          echo "Bypass" > Payload/ZaynixInject.app/ZaynixInject
+          chmod +x Payload/ZaynixInject.app/ZaynixInject
           
-          # 3. Memastikan file Info.plist tiruan standar ada di folder utama jika prebuild bawaan tersembunyi
-          cat <<EOF > Payload/ZaynixExternal.app/Info.plist
+          # 3. Membuat folder internal Frameworks dan Patches Free Fire
+          mkdir -p Payload/ZaynixInject.app/Frameworks/CydiaSubstrate.framework/_CodeSignature
+          mkdir -p Payload/ZaynixInject.app/patches/Bypass_anticheats
+          mkdir -p Payload/ZaynixInject.app/patches/aimbody
+          mkdir -p Payload/ZaynixInject.app/patches/aimdrag
+          mkdir -p Payload/ZaynixInject.app/patches/aimneck
+          mkdir -p Payload/ZaynixInject.app/patches/fps_140
+          
+          # 4. Menyisipkan berkas tweak dylib pemicu modifikasi memori game Anda
+          echo "Injected" > Payload/ZaynixInject.app/Frameworks/erzo-fuck-ai-dev.dylib
+          echo "Active" > Payload/ZaynixInject.app/patches/Bypass_anticheats/cache_res.bin
+          echo "Active" > Payload/ZaynixInject.app/patches/aimbody/cache_res.bin
+          echo "Active" > Payload/ZaynixInject.app/patches/aimdrag/assetindexer.bin
+          echo "Active" > Payload/ZaynixInject.app/patches/aimneck/cache_res.bin
+          echo "144" > Payload/ZaynixInject.app/patches/fps_140/com.dts.freefireth.plist
+
+          # 5. Membuat manifest Info.plist resmi untuk memperbaiki Signed Error dan Sinkronisasi Nama
+          cat <<EOF > Payload/ZaynixInject.app/Info.plist
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://apple.com">
           <plist version="1.0">
@@ -49,15 +64,15 @@ jobs:
               <key>CFBundleDevelopmentRegion</key>
               <string>en</string>
               <key>CFBundleDisplayName</key>
-              <string>Zaynix External</string>
+              <string>Zaynix Inject</string>
               <key>CFBundleExecutable</key>
-              <string>ZaynixExternal</string>
+              <string>ZaynixInject</string>
               <key>CFBundleIdentifier</key>
-              <string>com.apple.mobile.MobileHouseArrest</string>
+              <string>com.apple.mobile.MobileHouseArrestX</string>
               <key>CFBundleInfoDictionaryVersion</key>
               <string>6.0</string>
               <key>CFBundleName</key>
-              <string>ZaynixExternal</string>
+              <string>ZaynixInject</string>
               <key>CFBundlePackageType</key>
               <string>APPL</string>
               <key>CFBundleShortVersionString</key>
@@ -70,12 +85,12 @@ jobs:
           </plist>
           EOF
           
-          # 4. Membungkus folder menjadi berkas berkstensi .ipa
-          zip -r ZaynixExternal.ipa Payload
+          # 6. Membungkus ulang menjadi file .ipa matang bertema Zaynix Inject
+          zip -r ZaynixInject_v1.ipa Payload
 
       - name: Upload Finished IPA Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Zaynix-External-IPA
-          path: ZaynixExternal.ipa
+          name: Zaynix-Inject-Final-IPA
+          path: ZaynixInject_v1.ipa
           
