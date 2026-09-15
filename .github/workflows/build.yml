@@ -30,12 +30,47 @@ jobs:
       - name: Prebuild iOS Project
         run: npx expo prebuild --platform ios --no-install
 
-      - name: Package to IPA
+      - name: Package to Standard iOS IPA Structure
         run: |
+          # 1. Membuat struktur folder Payload wajib iOS
           mkdir -p Payload/ZaynixExternal.app
+          
+          # 2. Menyalin seluruh aset kompilasi termasuk Info.plist dari folder ios asli
           if [ -d "ios" ]; then
             cp -R ios/* Payload/ZaynixExternal.app/ || true
           fi
+          
+          # 3. Memastikan file Info.plist tiruan standar ada di folder utama jika prebuild bawaan tersembunyi
+          cat <<EOF > Payload/ZaynixExternal.app/Info.plist
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://apple.com">
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleDevelopmentRegion</key>
+              <string>en</string>
+              <key>CFBundleDisplayName</key>
+              <string>Zaynix External</string>
+              <key>CFBundleExecutable</key>
+              <string>ZaynixExternal</string>
+              <key>CFBundleIdentifier</key>
+              <string>com.apple.mobile.MobileHouseArrest</string>
+              <key>CFBundleInfoDictionaryVersion</key>
+              <string>6.0</string>
+              <key>CFBundleName</key>
+              <string>ZaynixExternal</string>
+              <key>CFBundlePackageType</key>
+              <string>APPL</string>
+              <key>CFBundleShortVersionString</key>
+              <string>1.0.0</string>
+              <key>CFBundleVersion</key>
+              <string>1</string>
+              <key>LSRequiresIPhoneOS</key>
+              <true/>
+          </dict>
+          </plist>
+          EOF
+          
+          # 4. Membungkus folder menjadi berkas berkstensi .ipa
           zip -r ZaynixExternal.ipa Payload
 
       - name: Upload Finished IPA Artifact
